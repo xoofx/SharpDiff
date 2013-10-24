@@ -224,7 +224,7 @@ namespace SharpDiff
 
         #region Nested type: Element
 
-        private class Element
+        private struct Element
         {
             public readonly int HashCode;
             public readonly T Item;

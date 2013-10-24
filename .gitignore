@@ -1,0 +1,12 @@
+*.user
+bin/
+obj/
+*.suo
+_ReSharper.*/
+*.bak
+Binaries/
+*.fbl7
+*.fb7lck
+*.orig
+Help/
+NuGet/

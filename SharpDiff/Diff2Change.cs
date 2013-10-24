@@ -1,23 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 
 namespace SharpDiff
 {
     /// <summary>
-    /// This class contains a single section of diff output from the <see cref="Diff.Compare{T}(System.Collections.Generic.IList{T},System.Collections.Generic.IList{T})"/>
+    /// This class contains a single section of diff output from the <see cref="Diff2.Compare{T}(System.Collections.Generic.IList{T},System.Collections.Generic.IList{T})"/>
     /// method.
     /// </summary>
-    public sealed class DiffChange : IEquatable<DiffChange>
+    public struct Diff2Change : IEquatable<Diff2Change>
     {
         private readonly bool _Equal;
         private readonly int _Length1;
         private readonly int _Length2;
 
         /// <summary>
-        /// Initializes a new instance of <see cref="DiffChange"/>.
+        /// Initializes a new instance of <see cref="Diff2Change"/>.
         /// </summary>
         /// <param name="equal">
         /// If <c>true</c>, then the section specifies a section from the first
@@ -43,7 +40,7 @@ namespace SharpDiff
         /// <exception cref="ArgumentException">
         /// <para><paramref name="equal"/> is <c>true</c> but <paramref name="length1"/> is not equal to <paramref name="length2"/>.</para>
         /// </exception>
-        public DiffChange(bool equal, int length1, int length2)
+        public Diff2Change(bool equal, int length1, int length2)
         {
             if (length1 < 0)
                 throw new ArgumentOutOfRangeException("length1", "length1 must be 0 or greater");
@@ -58,7 +55,7 @@ namespace SharpDiff
         }
 
         /// <summary>
-        /// Gets whether the <see cref="DiffChange"/> specifies equal sections in the two
+        /// Gets whether the <see cref="Diff2Change"/> specifies equal sections in the two
         /// collections, or differing sections.
         /// </summary>
         /// <value>
@@ -97,7 +94,7 @@ namespace SharpDiff
             }
         }
 
-        #region IEquatable<DiffChange> Members
+        #region IEquatable<Diff2Change> Members
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -106,7 +103,7 @@ namespace SharpDiff
         /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        public bool Equals(DiffChange other)
+        public bool Equals(Diff2Change other)
         {
             if (ReferenceEquals(null, other))
                 return false;
@@ -130,9 +127,9 @@ namespace SharpDiff
                 return false;
             if (ReferenceEquals(this, obj))
                 return true;
-            if (obj.GetType() != typeof (DiffChange))
+            if (obj.GetType() != typeof (Diff2Change))
                 return false;
-            return Equals((DiffChange) obj);
+            return Equals((Diff2Change) obj);
         }
 
         /// <summary>
@@ -169,6 +166,28 @@ namespace SharpDiff
                 return string.Format(CultureInfo.InvariantCulture, "replace {0}", _Length1);
 
             return string.Format(CultureInfo.InvariantCulture, "replace {0} with {1}", _Length1, _Length2);
+        }
+
+        /// <summary>
+        /// Implements the ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator ==(Diff2Change left, Diff2Change right)
+        {
+            return Equals(left, right);
+        }
+
+        /// <summary>
+        /// Implements the !=.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator !=(Diff2Change left, Diff2Change right)
+        {
+            return !Equals(left, right);
         }
     }
 }

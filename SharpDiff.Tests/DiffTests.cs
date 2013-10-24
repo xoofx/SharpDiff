@@ -16,7 +16,7 @@ namespace SharpDiff.Tests
             var collection2 = new List<string>();
             EqualityComparer<string> comparer = EqualityComparer<string>.Default;
 
-            Assert.Throws<ArgumentNullException>(() => Diff.Compare(collection1, collection2, comparer));
+            Assert.Throws<ArgumentNullException>(() => Diff2.Compare(collection1, collection2, comparer));
         }
 
         [Test]
@@ -26,7 +26,7 @@ namespace SharpDiff.Tests
             List<string> collection2 = null;
             EqualityComparer<string> comparer = EqualityComparer<string>.Default;
 
-            Assert.Throws<ArgumentNullException>(() => Diff.Compare(collection1, collection2, comparer));
+            Assert.Throws<ArgumentNullException>(() => Diff2.Compare(collection1, collection2, comparer));
         }
 
         [Test]
@@ -36,7 +36,7 @@ namespace SharpDiff.Tests
             var collection2 = new List<string>();
             EqualityComparer<string> comparer = null;
 
-            Assert.Throws<ArgumentNullException>(() => Diff.Compare(collection1, collection2, comparer));
+            Assert.Throws<ArgumentNullException>(() => Diff2.Compare(collection1, collection2, comparer));
         }
 
         [Test]
@@ -45,19 +45,19 @@ namespace SharpDiff.Tests
             const string text1 = "This is a test of the diff implementation, with some text that is deleted.";
             const string text2 = "This is another test of the same implementation, with some more text.";
 
-            DiffChange[] diff = Diff.Compare(text1, text2).ToArray();
+            Diff2Change[] diff = Diff2.Compare(text1, text2).ToArray();
 
             CollectionAssert.AreEqual(diff, new[]
             {
-                new DiffChange(true, 9, 9), // same        "This is a"
-                new DiffChange(false, 0, 6), // add        "nother"
-                new DiffChange(true, 13, 13), // same      " test of the "
-                new DiffChange(false, 4, 4), // replace    "same" with "diff"
-                new DiffChange(true, 27, 27), // same      " implementation, with some "
-                new DiffChange(false, 0, 5), // add        "more "
-                new DiffChange(true, 4, 4), // same        "text"
-                new DiffChange(false, 16, 0), // delete    " that is deleted"
-                new DiffChange(true, 1, 1), // same        "."
+                new Diff2Change(true, 9, 9), // same        "This is a"
+                new Diff2Change(false, 0, 6), // add        "nother"
+                new Diff2Change(true, 13, 13), // same      " test of the "
+                new Diff2Change(false, 4, 4), // replace    "same" with "diff"
+                new Diff2Change(true, 27, 27), // same      " implementation, with some "
+                new Diff2Change(false, 0, 5), // add        "more "
+                new Diff2Change(true, 4, 4), // same        "text"
+                new Diff2Change(false, 16, 0), // delete    " that is deleted"
+                new Diff2Change(true, 1, 1), // same        "."
             });
         }
     }

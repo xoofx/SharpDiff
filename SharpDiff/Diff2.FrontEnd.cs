@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+
 
 namespace SharpDiff
 {
+
     /// <summary>
-    /// This class is the main entry point to perform diff comparisons. It provides methods for a basic diff algorithm by recursively 
-    /// applying the Longest Common Substring on pieces of the collections, and reporting sections that are similar, and those that are not,
-    /// in the appropriate sequence.
+    /// This class provides a diff algorithm between 2 collections.
     /// </summary>
-    public static class Diff
+    /// <remarks>
+    /// This class is the main entry point to perform diff comparisons between 2 collections. 
+    /// It provides methods for a basic diff algorithm by recursively applying the Longest Common Substring 
+    /// on pieces of the collections, and reporting sections that are similar, and those that are not,
+    /// in the appropriate sequence.
+    /// </remarks>
+    public static class Diff2
     {
         /// <summary>
         /// Compares the two collections and generate a diff using a default comparer for T.
@@ -18,8 +22,8 @@ namespace SharpDiff
         /// <typeparam name="T">Type of the element in the list</typeparam>
         /// <param name="left">The first collection.</param>
         /// <param name="right">The second collection.</param>
-        /// <returns>An enumeration of <see cref="DiffChange"/>.</returns>
-        public static IEnumerable<DiffChange> Compare<T>(IEnumerable<T> left, IEnumerable<T> right)
+        /// <returns>An enumeration of <see cref="Diff2Change"/>.</returns>
+        public static IEnumerable<Diff2Change> Compare<T>(IEnumerable<T> left, IEnumerable<T> right)
         {
             return Compare(left, right, EqualityComparer<T>.Default);
         }
@@ -31,8 +35,8 @@ namespace SharpDiff
         /// <param name="left">The first collection.</param>
         /// <param name="right">The second collection.</param>
         /// <param name="comparer">The comparer.</param>
-        /// <returns>An enumeration of <see cref="DiffChange"/>.</returns>
-        public static IEnumerable<DiffChange> Compare<T>(IEnumerable<T> left, IEnumerable<T> right, IEqualityComparer<T> comparer)
+        /// <returns>An enumeration of <see cref="Diff2Change"/>.</returns>
+        public static IEnumerable<Diff2Change> Compare<T>(IEnumerable<T> left, IEnumerable<T> right, IEqualityComparer<T> comparer)
         {
             if (left == null) throw new ArgumentNullException("left");
             if (right == null) throw new ArgumentNullException("right");
@@ -45,8 +49,8 @@ namespace SharpDiff
         /// <typeparam name="T">Type of the element in the list</typeparam>
         /// <param name="left">The first collection.</param>
         /// <param name="right">The second collection.</param>
-        /// <returns>An enumeration of <see cref="DiffChange"/>.</returns>
-        public static IEnumerable<DiffChange> Compare<T>(IList<T> left, IList<T> right)
+        /// <returns>An enumeration of <see cref="Diff2Change"/>.</returns>
+        public static IEnumerable<Diff2Change> Compare<T>(IList<T> left, IList<T> right)
         {
             return Compare(left, right, EqualityComparer<T>.Default);
         }
@@ -58,8 +62,8 @@ namespace SharpDiff
         /// <param name="left">The first collection.</param>
         /// <param name="right">The second collection.</param>
         /// <param name="comparer">The comparer.</param>
-        /// <returns>An enumeration of <see cref="DiffChange"/>.</returns>
-        public static IEnumerable<DiffChange> Compare<T>(IList<T> left, IList<T> right, IEqualityComparer<T> comparer)
+        /// <returns>An enumeration of <see cref="Diff2Change"/>.</returns>
+        public static IEnumerable<Diff2Change> Compare<T>(IList<T> left, IList<T> right, IEqualityComparer<T> comparer)
         {
             if (left == null) throw new ArgumentNullException("left");
             if (right == null) throw new ArgumentNullException("right");
@@ -92,9 +96,9 @@ namespace SharpDiff
         /// each element in the list in the first or second collection (sometimes one instance for a line
         /// from both, when lines are equal or similar.)
         /// </returns>
-        public static IEnumerable<AlignedDiffChange<T>> Compare<T>(IList<T> first, IList<T> second, ISimilarityComparer<T> similarityComparer, IAlignmentFilter<T> alignmentFilter)
+        public static IEnumerable<AlignedDiffChange<T>> CompareAndAlign<T>(IList<T> first, IList<T> second, ISimilarityComparer<T> similarityComparer, IAlignmentFilter<T> alignmentFilter)
         {
-            return Compare(first, second, EqualityComparer<T>.Default, similarityComparer, alignmentFilter);
+            return CompareAndAlign(first, second, EqualityComparer<T>.Default, similarityComparer, alignmentFilter);
         }
 
         /// <summary>
@@ -124,7 +128,7 @@ namespace SharpDiff
         /// each element in the list in the first or second collection (sometimes one instance for a line
         /// from both, when lines are equal or similar.)
         /// </returns>
-        public static IEnumerable<AlignedDiffChange<T>> Compare<T>(IList<T> first, IList<T> second, IEqualityComparer<T> equalityComparer,
+        public static IEnumerable<AlignedDiffChange<T>> CompareAndAlign<T>(IList<T> first, IList<T> second, IEqualityComparer<T> equalityComparer,
             ISimilarityComparer<T> similarityComparer, IAlignmentFilter<T> alignmentFilter)
         {
             if (first == null) throw new ArgumentNullException("first");

@@ -12,7 +12,7 @@ namespace SharpDiff.Tests
         public IEnumerable<Type> AllTypesInDiffLib()
         {
             return
-                from type in typeof(Diff).Assembly.GetTypes()
+                from type in typeof(Diff2).Assembly.GetTypes()
                 where type.IsPublic
                       && type.IsClass
                 select type;

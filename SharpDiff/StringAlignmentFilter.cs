@@ -18,7 +18,7 @@ namespace SharpDiff
         /// </summary>
         public StringAlignmentFilter()
         {
-            _DiffPredicate = delegate(string value1, string value2, IEnumerable<DiffChange> diff)
+            _DiffPredicate = delegate(string value1, string value2, IEnumerable<Diff2Change> diff)
             {
                 int same = diff.Where(s => s.Equal).Sum(s => s.Length1);
                 return ((same*2.0)/(value1.Length + value2.Length + 0.0)) >= 0.1;
@@ -72,7 +72,7 @@ namespace SharpDiff
             if (value1.Length == 0 || value2.Length == 0)
                 return false;
 
-            var diff = Diff.Compare(value1.ToCharArray(), value2.ToCharArray());
+            var diff = Diff2.Compare(value1.ToCharArray(), value2.ToCharArray());
             return _DiffPredicate(value1, value2, diff);
         }
 

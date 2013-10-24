@@ -16,7 +16,7 @@
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\Lasse V. Karlsen.snk</AssemblyOriginatorKeyFile>
@@ -25,7 +25,8 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>bin\Debug\SharpDiff.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>full</DebugType>
     <ErrorReport>prompt</ErrorReport>
@@ -56,9 +57,12 @@
   <ItemGroup>
     <Compile Include="AlignedDiffChange.cs" />
     <Compile Include="ChangeType.cs" />
-    <Compile Include="Diff.cs" />
+    <Compile Include="Diff3.FrontEnd.cs" />
+    <Compile Include="Diff2.FrontEnd.cs" />
     <Compile Include="Diff2.cs" />
-    <Compile Include="DiffChange.cs" />
+    <Compile Include="Diff3.cs" />
+    <Compile Include="Diff3Change.cs" />
+    <Compile Include="Diff2Change.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="IAlignmentFilter.cs" />
     <Compile Include="ISimilarityComparer.cs" />
@@ -66,6 +70,8 @@
     <Compile Include="LongestCommonSubstringResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AlignedDiff.cs" />
+    <Compile Include="Range.cs" />
+    <Compile Include="RangeList.cs" />
     <Compile Include="StringSimilarityComparer.cs" />
     <Compile Include="StringAlignmentFilter.cs" />
     <Compile Include="StringSimilarityFilterPredicate.cs" />

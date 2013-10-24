@@ -33,7 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\Lasse V. Karlsen.snk</AssemblyOriginatorKeyFile>
@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="AlignedDiffChangeTests.cs" />
     <Compile Include="AllClassesShouldBeSealedTests.cs" />
+    <Compile Include="Diff3Tests.cs" />
     <Compile Include="DiffChangeTests.cs" />
     <Compile Include="DiffTests.cs" />
     <Compile Include="EnumerableExtensionsTests.cs" />

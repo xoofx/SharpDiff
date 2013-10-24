@@ -1,27 +1,23 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 
 namespace SharpDiff
 {
     /// <summary>
-    /// This class implements the basic diff algorithm by recursively applying the Longest Common Substring
-    /// on pieces of the collections, and reporting sections that are similar, and those that are not,
-    /// in the appropriate sequence.
+    /// This class provides a diff algorithm between 2 collections.
     /// </summary>
     /// <typeparam name="T">
     /// The types of elements in the collections being compared.
     /// </typeparam>
-    internal struct Diff2<T> : IEnumerable<DiffChange>
+    internal struct Diff2<T> : IEnumerable<Diff2Change>
     {
         private readonly int _Collection1Length;
         private readonly int _Collection2Length;
         private readonly LongestCommonSubstring<T> _LongestCommonSubstring;
 
         /// <summary>
-        /// Initializes a new instance of <see cref="Diff"/>
+        /// Initializes a new instance of <see cref="Diff2"/>
         /// using the default <see cref="IEqualityComparer{T}"/> instance for the
         /// <typeparamref name="T"/> type.
         /// </summary>
@@ -43,7 +39,7 @@ namespace SharpDiff
         }
 
         /// <summary>
-        /// Initializes a new instance of <see cref="Diff"/>.
+        /// Initializes a new instance of <see cref="Diff2"/>.
         /// </summary>
         /// <param name="collection1">
         /// The first collection of items.
@@ -72,7 +68,7 @@ namespace SharpDiff
             _LongestCommonSubstring = new LongestCommonSubstring<T>(randomAccess1, randomAccess2, comparer);
         }
 
-        #region IEnumerable<DiffChange> Members
+        #region IEnumerable<Diff2Change> Members
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -81,7 +77,7 @@ namespace SharpDiff
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
         /// </returns>
         /// <filterpriority>1</filterpriority>
-        public IEnumerator<DiffChange> GetEnumerator()
+        public IEnumerator<Diff2Change> GetEnumerator()
         {
             return Generate().GetEnumerator();
         }
@@ -96,43 +92,43 @@ namespace SharpDiff
         /// <summary>
         /// Generates the diff between the two collections.
         /// </summary>
-        public IEnumerable<DiffChange> Generate()
+        public IEnumerable<Diff2Change> Generate()
         {
             return GenerateSections(0, _Collection1Length, 0, _Collection2Length);
         }
 
-        private IEnumerable<DiffChange> GenerateSections(int lower1, int upper1, int lower2, int upper2)
+        private IEnumerable<Diff2Change> GenerateSections(int lower1, int upper1, int lower2, int upper2)
         {
             if (lower1 == upper1 && lower2 == upper2)
                 yield break;
 
             if (lower1 == upper1)
             {
-                yield return new DiffChange(false, 0, upper2 - lower2);
+                yield return new Diff2Change(false, 0, upper2 - lower2);
                 yield break;
             }
 
             if (lower2 == upper2)
             {
-                yield return new DiffChange(false, upper1 - lower1, 0);
+                yield return new Diff2Change(false, upper1 - lower1, 0);
                 yield break;
             }
 
             LongestCommonSubstringResult lcsr = _LongestCommonSubstring.Find(lower1, upper1, lower2, upper2);
             if (lcsr == null)
             {
-                yield return new DiffChange(false, upper1 - lower1, upper2 - lower2);
+                yield return new Diff2Change(false, upper1 - lower1, upper2 - lower2);
                 yield break;
             }
 
             if (lower1 < lcsr.PositionInCollection1 || lower2 < lcsr.PositionInCollection2)
             {
-                foreach (DiffChange prevSection in GenerateSections(lower1, lcsr.PositionInCollection1, lower2, lcsr.PositionInCollection2)) yield return prevSection;
+                foreach (Diff2Change prevSection in GenerateSections(lower1, lcsr.PositionInCollection1, lower2, lcsr.PositionInCollection2)) yield return prevSection;
             }
-            yield return new DiffChange(true, lcsr.Length, lcsr.Length);
+            yield return new Diff2Change(true, lcsr.Length, lcsr.Length);
             if (lcsr.PositionInCollection1 + lcsr.Length < upper1 || lcsr.PositionInCollection2 + lcsr.Length < upper2)
             {
-                foreach (DiffChange nextSection in GenerateSections(lcsr.PositionInCollection1 + lcsr.Length, upper1, lcsr.PositionInCollection2 + lcsr.Length, upper2))
+                foreach (Diff2Change nextSection in GenerateSections(lcsr.PositionInCollection1 + lcsr.Length, upper1, lcsr.PositionInCollection2 + lcsr.Length, upper2))
                     yield return nextSection;
             }
         }

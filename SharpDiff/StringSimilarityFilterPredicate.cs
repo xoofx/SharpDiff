@@ -23,5 +23,5 @@ namespace SharpDiff
     /// <c>true</c> if the strings are similar enough (reported as a change);
     /// otherwise, <c>false</c> (reported as a delete plus an add.)
     /// </returns>
-    public delegate bool StringSimilarityFilterPredicate(string value1, string value2, IEnumerable<DiffChange> diff);
+    public delegate bool StringSimilarityFilterPredicate(string value1, string value2, IEnumerable<Diff2Change> diff);
 }

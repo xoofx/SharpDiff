@@ -7,8 +7,8 @@ using System.Linq;
 namespace SharpDiff
 {
     /// <summary>
-    /// This class implements a slightly more advanced diff algorithm than <see cref="Diff"/> by
-    /// taking the output from <see cref="Diff"/> and attempting to align individual elements inside
+    /// This class implements a slightly more advanced diff algorithm than <see cref="Diff2"/> by
+    /// taking the output from <see cref="Diff2"/> and attempting to align individual elements inside
     /// replace-blocks. This is mostly suitable for text file diffs.
     /// </summary>
     /// <typeparam name="T">
@@ -125,7 +125,7 @@ namespace SharpDiff
         {
             int i1 = 0;
             int i2 = 0;
-            foreach (DiffChange section in Diff.Compare<T>(_Collection1, _Collection2, _EqualityComparer))
+            foreach (Diff2Change section in Diff2.Compare<T>(_Collection1, _Collection2, _EqualityComparer))
             {
                 if (section.Equal)
                 {
@@ -169,7 +169,7 @@ namespace SharpDiff
             }
         }
 
-        private AlignedDiffChange<T>[] TryAlignChanges(DiffChange change, int i1, int i2)
+        private AlignedDiffChange<T>[] TryAlignChanges(Diff2Change change, int i1, int i2)
         {
             // "Optimization", too big input-sets will have to be dropped for now, will revisit this
             // number in the future to see if I can bring it up, or possible that I don't need it,

@@ -37,11 +37,11 @@ namespace SharpDiff
         public LongestCommonSubstringResult(int positionInCollection1, int positionInCollection2, int length)
         {
             if (positionInCollection1 < 0)
-                throw new ArgumentOutOfRangeException("positionInCollection1", positionInCollection1, "positionInCollection1 must be zero or greater");
+                throw new ArgumentOutOfRangeException("positionInCollection1", string.Format("positionInCollection1 [{0}] must be zero or greater", positionInCollection1));
             if (positionInCollection2 < 0)
-                throw new ArgumentOutOfRangeException("positionInCollection2", positionInCollection2, "positionInCollection2 must be zero or greater");
+                throw new ArgumentOutOfRangeException("positionInCollection2", string.Format("positionInCollection2 [{0}] must be zero or greater", positionInCollection2));
             if (length <= 0)
-                throw new ArgumentOutOfRangeException("length", length, "length must be greater than zero");
+                throw new ArgumentOutOfRangeException("length", string.Format("length [{0}] must be greater than zero", length));
 
             _PositionInCollection1 = positionInCollection1;
             _PositionInCollection2 = positionInCollection2;

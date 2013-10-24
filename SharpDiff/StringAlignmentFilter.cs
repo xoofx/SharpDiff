@@ -72,7 +72,7 @@ namespace SharpDiff
             if (value1.Length == 0 || value2.Length == 0)
                 return false;
 
-            var diff = Diff.Compare(value1, value2);
+            var diff = Diff.Compare(value1.ToCharArray(), value2.ToCharArray());
             return _DiffPredicate(value1, value2, diff);
         }
 

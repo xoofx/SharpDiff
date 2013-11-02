@@ -62,7 +62,6 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AlignedDiffChangeTests.cs" />
     <Compile Include="AllClassesShouldBeSealedTests.cs" />
     <Compile Include="Diff3Tests.cs" />
     <Compile Include="DiffChangeTests.cs" />

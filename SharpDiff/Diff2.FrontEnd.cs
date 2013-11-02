@@ -92,11 +92,11 @@ namespace SharpDiff
         /// its place.
         /// </param>
         /// <returns>
-        /// A collection of <see cref="AlignedDiffChange{T}"/> objects, one for
+        /// A collection of <see cref="AlignedDiffChange"/> objects, one for
         /// each element in the list in the first or second collection (sometimes one instance for a line
         /// from both, when lines are equal or similar.)
         /// </returns>
-        public static IEnumerable<AlignedDiffChange<T>> CompareAndAlign<T>(IList<T> first, IList<T> second, ISimilarityComparer<T> similarityComparer, IAlignmentFilter<T> alignmentFilter)
+        public static IEnumerable<AlignedDiffChange> CompareAndAlign<T>(IList<T> first, IList<T> second, ISimilarityComparer<T> similarityComparer, IAlignmentFilter<T> alignmentFilter)
         {
             return CompareAndAlign(first, second, EqualityComparer<T>.Default, similarityComparer, alignmentFilter);
         }
@@ -124,11 +124,11 @@ namespace SharpDiff
         /// its place.
         /// </param>
         /// <returns>
-        /// A collection of <see cref="AlignedDiffChange{T}"/> objects, one for
+        /// A collection of <see cref="AlignedDiffChange"/> objects, one for
         /// each element in the list in the first or second collection (sometimes one instance for a line
         /// from both, when lines are equal or similar.)
         /// </returns>
-        public static IEnumerable<AlignedDiffChange<T>> CompareAndAlign<T>(IList<T> first, IList<T> second, IEqualityComparer<T> equalityComparer,
+        public static IEnumerable<AlignedDiffChange> CompareAndAlign<T>(IList<T> first, IList<T> second, IEqualityComparer<T> equalityComparer,
             ISimilarityComparer<T> similarityComparer, IAlignmentFilter<T> alignmentFilter)
         {
             if (first == null) throw new ArgumentNullException("first");

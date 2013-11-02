@@ -14,7 +14,7 @@ namespace SharpDiff
     /// <typeparam name="T">
     /// The types of elements in the collections being compared.
     /// </typeparam>
-    internal struct AlignedDiff<T> : IEnumerable<AlignedDiffChange<T>>
+    internal struct AlignedDiff<T> : IEnumerable<AlignedDiffChange>
     {
         // If the combined lengths of the two change-sections is more than this number of
         // elements, punt to a delete + add for the entire change. The alignment code
@@ -92,7 +92,7 @@ namespace SharpDiff
             _Upper2 = 0;
         }
 
-        #region IEnumerable<AlignedDiffChange<T>> Members
+        #region IEnumerable<AlignedDiffChange> Members
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -101,7 +101,7 @@ namespace SharpDiff
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
         /// </returns>
         /// <filterpriority>1</filterpriority>
-        public IEnumerator<AlignedDiffChange<T>> GetEnumerator()
+        public IEnumerator<AlignedDiffChange> GetEnumerator()
         {
             return Generate().GetEnumerator();
         }
@@ -117,11 +117,11 @@ namespace SharpDiff
         /// Generates the diff, one line of output at a time.
         /// </summary>
         /// <returns>
-        /// A collection of <see cref="AlignedDiffChange{T}"/> objects, one for
+        /// A collection of <see cref="AlignedDiffChange"/> objects, one for
         /// each line in the first or second collection (sometimes one instance for a line
         /// from both, when lines are equal or similar.)
         /// </returns>
-        public IEnumerable<AlignedDiffChange<T>> Generate()
+        public IEnumerable<AlignedDiffChange> Generate()
         {
             int i1 = 0;
             int i2 = 0;
@@ -131,7 +131,7 @@ namespace SharpDiff
                 {
                     for (int index = 0; index < section.Length1; index++)
                     {
-                        yield return new AlignedDiffChange<T>(ChangeType.Same, _Collection1[i1], _Collection2[i2]);
+                        yield return new AlignedDiffChange(ChangeType.Same, i1, i2);
                         i1++;
                         i2++;
                     }
@@ -141,7 +141,7 @@ namespace SharpDiff
                     bool deletePlusAdd = true;
                     if (section.Length1 > 0 && section.Length2 > 0)
                     {
-                        AlignedDiffChange<T>[] alignedChanges = TryAlignChanges(section, i1, i2);
+                        AlignedDiffChange[] alignedChanges = TryAlignChanges(section, i1, i2);
                         if (alignedChanges.Length > 0)
                         {
                             deletePlusAdd = false;
@@ -156,12 +156,12 @@ namespace SharpDiff
                     {
                         for (int index = 0; index < section.Length1; index++)
                         {
-                            yield return new AlignedDiffChange<T>(ChangeType.Deleted, _Collection1[i1], default(T));
+                            yield return new AlignedDiffChange(ChangeType.Deleted, i1, -1);
                             i1++;
                         }
                         for (int index = 0; index < section.Length2; index++)
                         {
-                            yield return new AlignedDiffChange<T>(ChangeType.Added, default(T), _Collection2[i2]);
+                            yield return new AlignedDiffChange(ChangeType.Added, -1, i2);
                             i2++;
                         }
                     }
@@ -169,13 +169,13 @@ namespace SharpDiff
             }
         }
 
-        private AlignedDiffChange<T>[] TryAlignChanges(Diff2Change change, int i1, int i2)
+        private AlignedDiffChange[] TryAlignChanges(Diff2Change change, int i1, int i2)
         {
             // "Optimization", too big input-sets will have to be dropped for now, will revisit this
             // number in the future to see if I can bring it up, or possible that I don't need it,
             // but since this is a recursive solution the combinations could get big fast.
             if (change.Length1 + change.Length2 > MaximumChangedSectionSizeBeforePuntingToDeletePlusAdd)
-                return new AlignedDiffChange<T>[0];
+                return new AlignedDiffChange[0];
 
             _BestAlignmentNodes.Clear();
             _Upper1 = i1 + change.Length1;
@@ -184,29 +184,28 @@ namespace SharpDiff
             ChangeNode alignmentNodes = CalculateAlignmentNodes(i1, i2);
             if (alignmentNodes != null)
             {
-                var result = new List<AlignedDiffChange<T>>();
+                var result = new List<AlignedDiffChange>();
                 while (alignmentNodes != null)
                 {
                     switch (alignmentNodes.Type)
                     {
                         case ChangeType.Added:
-                            result.Add(new AlignedDiffChange<T>(ChangeType.Added, default(T), _Collection2[i2]));
+                            result.Add(new AlignedDiffChange(ChangeType.Added, -1, i2));
                             i2++;
                             break;
 
                         case ChangeType.Deleted:
-                            result.Add(new AlignedDiffChange<T>(ChangeType.Deleted, _Collection1[i1], default(T)));
+                            result.Add(new AlignedDiffChange(ChangeType.Deleted, i1, -1));
                             i1++;
                             break;
 
                         case ChangeType.Changed:
                             if (_AlignmentFilter.CanAlign(_Collection1[i1], _Collection2[i2]))
-                                result.Add(new AlignedDiffChange<T>(ChangeType.Changed, _Collection1[i1],
-                                    _Collection2[i2]));
+                                result.Add(new AlignedDiffChange(ChangeType.Changed, i1, i2));
                             else
                             {
-                                result.Add(new AlignedDiffChange<T>(ChangeType.Deleted, _Collection1[i1], default(T)));
-                                result.Add(new AlignedDiffChange<T>(ChangeType.Added, default(T), _Collection2[i2]));
+                                result.Add(new AlignedDiffChange(ChangeType.Deleted, i1, -1));
+                                result.Add(new AlignedDiffChange(ChangeType.Added, -1, i2));
                             }
                             i1++;
                             i2++;
@@ -218,7 +217,7 @@ namespace SharpDiff
                 return result.ToArray();
             }
 
-            return new AlignedDiffChange<T>[0];
+            return new AlignedDiffChange[0];
         }
 
         private ChangeNode CalculateAlignmentNodes(int i1, int i2)

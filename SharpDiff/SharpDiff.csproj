@@ -27,7 +27,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DebugType>full</DebugType>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
@@ -63,6 +63,7 @@
     <Compile Include="Diff3.cs" />
     <Compile Include="Diff3Change.cs" />
     <Compile Include="Diff2Change.cs" />
+    <Compile Include="Diff3ChangeType.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="IAlignmentFilter.cs" />
     <Compile Include="ISimilarityComparer.cs" />
@@ -70,8 +71,7 @@
     <Compile Include="LongestCommonSubstringResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AlignedDiff.cs" />
-    <Compile Include="Range.cs" />
-    <Compile Include="RangeList.cs" />
+    <Compile Include="Span.cs" />
     <Compile Include="StringSimilarityComparer.cs" />
     <Compile Include="StringAlignmentFilter.cs" />
     <Compile Include="StringSimilarityFilterPredicate.cs" />

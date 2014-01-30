@@ -229,13 +229,13 @@ namespace SharpDiff.Tests
 
             // Check 1) MergeFrom1And2 "D E F"
             Assert.AreEqual(Diff3ChangeType.MergeFrom1And2, diff3[1].ChangeType);
-            Assert.AreEqual(Span.Invalid, diff3[1].Base);
+            Assert.AreEqual(new Span(3, 3), diff3[1].Base);
             Assert.AreEqual(new Span(3, 5), diff3[1].From1);
             Assert.AreEqual(new Span(3, 5), diff3[1].From2);
 
             // Check 2) MergeFrom2 "G"
             Assert.AreEqual(Diff3ChangeType.MergeFrom2, diff3[2].ChangeType);
-            Assert.AreEqual(Span.Invalid, diff3[2].Base);
+            Assert.AreEqual(new Span(3, 3), diff3[2].Base);
             Assert.AreEqual(Span.Invalid, diff3[2].From1);
             Assert.AreEqual(new Span(6, 6), diff3[2].From2);
         }
@@ -259,7 +259,7 @@ namespace SharpDiff.Tests
 
             // 1) Conflict on X
             Assert.AreEqual(Diff3ChangeType.Conflict, diff3[1].ChangeType);
-            Assert.AreEqual(Span.Invalid, diff3[1].Base);
+            Assert.AreEqual(new Span(1, 1), diff3[1].Base);
             Assert.AreEqual(new Span(1, 1), diff3[1].From1);
             Assert.AreEqual(new Span(1, 1), diff3[1].From2);
 
@@ -289,19 +289,19 @@ namespace SharpDiff.Tests
 
             // 1) Conflict on X
             Assert.AreEqual(Diff3ChangeType.Conflict, diff3[1].ChangeType);
-            Assert.AreEqual(Span.Invalid, diff3[1].Base);
+            Assert.AreEqual(new Span(1, 1), diff3[1].Base);
             Assert.AreEqual(new Span(1, 1), diff3[1].From1);
             Assert.AreEqual(Span.Invalid, diff3[1].From2);
 
             // 2) MergeFrom1And2 "Y" and "Y" 
             Assert.AreEqual(Diff3ChangeType.MergeFrom1And2, diff3[2].ChangeType);
-            Assert.AreEqual(Span.Invalid, diff3[2].Base);
+            Assert.AreEqual(new Span(1, 1), diff3[2].Base);
             Assert.AreEqual(new Span(2, 2), diff3[2].From1);
             Assert.AreEqual(new Span(1, 1), diff3[2].From2);
 
             // 3) MergeFrom2 "Z" and "W" 
             Assert.AreEqual(Diff3ChangeType.MergeFrom2, diff3[3].ChangeType);
-            Assert.AreEqual(Span.Invalid, diff3[3].Base);
+            Assert.AreEqual(new Span(1, 1), diff3[3].Base);
             Assert.AreEqual(Span.Invalid, diff3[3].From1);
             Assert.AreEqual(new Span(2, 3), diff3[3].From2);
 
@@ -358,6 +358,57 @@ namespace SharpDiff.Tests
             Assert.AreEqual(new Span(5, 5), diff3[4].Base);
             Assert.AreEqual(new Span(5, 5), diff3[4].From1);
             Assert.AreEqual(new Span(5, 5), diff3[4].From2);
+        }
+
+        [Test]
+        public void MergeChangesOnlyFrom1WithEmptyBase()
+        {
+            //                                   0    1    2    3    4    5 
+            var baseList = new List<string>() {};
+            var mod1List = new List<string>() { "A", "D", "E", "B", "C", "F" };
+            var mod2List = new List<string>() {};
+
+            var diff3 = Diff3.Compare(baseList, mod1List, mod2List, EqualityComparer<string>.Default).ToList();
+
+            Assert.AreEqual(1, diff3.Count);
+            Assert.AreEqual(Diff3ChangeType.MergeFrom1, diff3[0].ChangeType);
+            Assert.AreEqual(new Span(0, 0), diff3[0].Base);
+            Assert.AreEqual(new Span(0, 5), diff3[0].From1);
+            Assert.AreEqual(Span.Invalid, diff3[0].From2);
+        }
+
+        [Test]
+        public void MergeChangesOnlyFrom2WithEmptyBase()
+        {
+            //                                   0    1    2    3    4    5 
+            var baseList = new List<string>() { };
+            var mod1List = new List<string>() { };
+            var mod2List = new List<string>() { "A", "D", "E", "B", "C", "F" };
+
+            var diff3 = Diff3.Compare(baseList, mod1List, mod2List, EqualityComparer<string>.Default).ToList();
+
+            Assert.AreEqual(1, diff3.Count);
+            Assert.AreEqual(Diff3ChangeType.MergeFrom2, diff3[0].ChangeType);
+            Assert.AreEqual(new Span(0, 0), diff3[0].Base);
+            Assert.AreEqual(Span.Invalid, diff3[0].From1);
+            Assert.AreEqual(new Span(0, 5), diff3[0].From2);
+        }
+
+        [Test]
+        public void MergeChangesOnlyFrom1And2WithEmptyBase()
+        {
+            //                                   0    1    2    3    4    5 
+            var baseList = new List<string>() { };
+            var mod1List = new List<string>() { "A", "D", "E", "B", "C", "F" };
+            var mod2List = new List<string>() { "A", "D", "E", "B", "C", "F" };
+
+            var diff3 = Diff3.Compare(baseList, mod1List, mod2List, EqualityComparer<string>.Default).ToList();
+
+            Assert.AreEqual(1, diff3.Count);
+            Assert.AreEqual(Diff3ChangeType.MergeFrom1And2, diff3[0].ChangeType);
+            Assert.AreEqual(new Span(0, 0), diff3[0].Base);
+            Assert.AreEqual(new Span(0, 5), diff3[0].From1);
+            Assert.AreEqual(new Span(0, 5), diff3[0].From2);
         }
     }
 }

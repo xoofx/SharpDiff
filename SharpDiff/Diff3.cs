@@ -93,6 +93,31 @@ namespace SharpDiff
                 }
             }
 
+            // Not sure this could happen, but in case, output conflicts instead of merge if original base-v1 and base-v2 diffs were not entirely processed
+            bool isInConflict = diffIndex1 < diffBaseModified1.Count && diffIndex2 < diffBaseModified2.Count;
+
+            // Process remaining diffs from1
+            while (diffIndex1 < diffBaseModified1.Count)
+            {
+                var diff1 = diffBaseModified1[diffIndex1];
+                AddChangeType(changes, isInConflict ? Diff3ChangeType.Conflict : Diff3ChangeType.MergeFrom1, new Span(baseIndex1, baseIndex1), new Span(index1, index1 + diff1.Length2 - 1), Span.Invalid, null, null);
+
+                baseIndex1 += diff1.Length1;
+                index1 += diff1.Length2;
+                diffIndex1++;
+            }
+
+            // Process remaining diffs from2
+            while (diffIndex2 < diffBaseModified2.Count)
+            {
+                var diff2 = diffBaseModified2[diffIndex2];
+                AddChangeType(changes, isInConflict ? Diff3ChangeType.Conflict : Diff3ChangeType.MergeFrom2, new Span(baseIndex2, baseIndex2), Span.Invalid, new Span(index2, index2 + diff2.Length2 - 1), null, null);
+
+                baseIndex2 += diff2.Length1;
+                index2 += diff2.Length2;
+                diffIndex2++;
+            }
+
             return FixPreviousConflictAsMerge(changes);
         }
 
@@ -254,23 +279,27 @@ namespace SharpDiff
                         var diffModified1Modified2 = Diff2.Compare(subList1, subList2, comparer).ToList();
                         int diff1Index = from1Range.From;
                         int diff2Index = from2Range.From;
+
+                        // Try to evaluate the base index to give an indication where the merge would be inserted in base
+                        var baseIndex = index > 0 ? changes[index - 1].Base.IsValid ? changes[index - 1].Base.To + 1 : 0 : 0;
+                        var spanBase = new Span(baseIndex, baseIndex);
                         foreach (var diff2Change in diffModified1Modified2)
                         {
                             if (diff2Change.Equal)
                             {
-                                AddChangeType(toChanges, Diff3ChangeType.MergeFrom1And2, Span.Invalid, new Span(diff1Index, diff1Index + diff2Change.Length1 - 1), new Span(diff2Index, diff2Index + diff2Change.Length2 - 1), null, null);
+                                AddChangeType(toChanges, Diff3ChangeType.MergeFrom1And2, spanBase, new Span(diff1Index, diff1Index + diff2Change.Length1 - 1), new Span(diff2Index, diff2Index + diff2Change.Length2 - 1), null, null);
                             }
                             else if (diff2Change.Length1 == 0)
                             {
-                                AddChangeType(toChanges, Diff3ChangeType.MergeFrom2, Span.Invalid, Span.Invalid, new Span(diff2Index, diff2Index + diff2Change.Length2 - 1), null, null);
+                                AddChangeType(toChanges, Diff3ChangeType.MergeFrom2, spanBase, Span.Invalid, new Span(diff2Index, diff2Index + diff2Change.Length2 - 1), null, null);
                             }
                             else if (diff2Change.Length2 == 0)
                             {
-                                AddChangeType(toChanges, Diff3ChangeType.Conflict, Span.Invalid, new Span(diff1Index, diff1Index + diff2Change.Length1 - 1), Span.Invalid, null, null);
+                                AddChangeType(toChanges, Diff3ChangeType.Conflict, spanBase, new Span(diff1Index, diff1Index + diff2Change.Length1 - 1), Span.Invalid, null, null);
                             }
                             else
                             {
-                                AddChangeType(toChanges, Diff3ChangeType.Conflict, Span.Invalid, new Span(diff1Index, diff1Index + diff2Change.Length1 - 1), new Span(diff2Index, diff2Index + diff2Change.Length2 - 1), null, null);
+                                AddChangeType(toChanges, Diff3ChangeType.Conflict, spanBase, new Span(diff1Index, diff1Index + diff2Change.Length1 - 1), new Span(diff2Index, diff2Index + diff2Change.Length2 - 1), null, null);
                             }
                             diff1Index += diff2Change.Length1;
                             diff2Index += diff2Change.Length2;

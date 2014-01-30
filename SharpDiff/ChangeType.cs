@@ -6,7 +6,7 @@ using System.Linq;
 namespace SharpDiff
 {
     /// <summary>
-    /// This enum is used by <see cref="AlignedDiffChange{T}"/> to specify how
+    /// This enum is used by <see cref="AlignedDiffChange"/> to specify how
     /// the two elements from the two collections relate.
     /// </summary>
     public enum ChangeType

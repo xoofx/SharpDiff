@@ -55,41 +55,63 @@ namespace SharpDiff
                 }
                 else
                 {
-                    if (!diff1.Equal || baseIndex2 > baseIndex1)
+                    var baseRange = Span.Invalid;
+                    var from1Range = Span.Invalid;
+                    var from2Range = Span.Invalid;
+
+                    bool change1 = false;
+                    bool change2 = false;
+
+                    var diff1Equal = true;
+                    var diff2Equal = true;
+
+                    // Try to advance as much as possible on both sides until we reach a common point (baseIndex1 == baseIndex2)
+                    // This will form a single conflict node
+                    while (true)
                     {
-                        var baseRange = Span.Invalid;
-                        var from1Range = Span.Invalid;
+                        if (diffIndex1 < diffBaseModified1.Count && !diff1.Equal || baseIndex2 > baseIndex1)
+                        {
+                            // Advance in list1
+                            change1 = true;
+                            diff1Equal &= diff1.Equal;
 
-                        if (diff1.Length2 > 0)
-                            from1Range = new Span(index1, index1 + diff1.Length2 - 1);
+                            if (diff1.Length2 > 0)
+                                from1Range = new Span(from1Range != Span.Invalid ? from1Range.From : index1, index1 + diff1.Length2 - 1);
 
-                        if (diff1.Length1 > 0)
-                            baseRange = new Span(baseIndex1, baseIndex1 + diff1.Length1 - 1);
+                            if (diff1.Length1 > 0)
+                                baseRange = new Span(baseRange != Span.Invalid ? baseRange.From : baseIndex1, baseIndex1 + diff1.Length1 - 1);
 
-                        AddChangeType(changes, Diff3ChangeType.Conflict, baseRange, from1Range, Span.Invalid, diff1.Equal, null);
+                            baseIndex1 += diff1.Length1;
+                            index1 += diff1.Length2;
 
-                        baseIndex1 += diff1.Length1;
-                        index1 += diff1.Length2;
-                        diffIndex1++;
+                            if (++diffIndex1 < diffBaseModified1.Count)
+                                diff1 = diffBaseModified1[diffIndex1];
+                        }
+                        else if (diffIndex2 < diffBaseModified2.Count && !diff2.Equal || baseIndex1 > baseIndex2)
+                        {
+                            // Advance in list2
+                            change2 = true;
+                            diff2Equal &= diff2.Equal;
+
+                            if (diff2.Length2 > 0)
+                                from2Range = new Span(from2Range != Span.Invalid ? from2Range.From : index2, index2 + diff2.Length2 - 1);
+
+                            if (diff2.Length1 > 0)
+                                baseRange = new Span(baseRange != Span.Invalid ? baseRange.From : baseIndex2, baseIndex2 + diff2.Length1 - 1);
+
+                            baseIndex2 += diff2.Length1;
+                            index2 += diff2.Length2;
+
+                            if (++diffIndex2 < diffBaseModified2.Count)
+                                diff2 = diffBaseModified2[diffIndex2];
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
 
-                    if (!diff2.Equal || baseIndex1 > baseIndex2)
-                    {
-                        var baseRange = Span.Invalid;
-                        var from2Range = Span.Invalid;
-
-                        if (diff2.Length2 > 0)
-                            from2Range = new Span(index2, index2 + diff2.Length2 - 1);
-
-                        if (diff2.Length1 > 0)
-                            baseRange = new Span(baseIndex2, baseIndex2 + diff2.Length1 - 1);
-
-                        AddChangeType(changes, Diff3ChangeType.Conflict, baseRange, Span.Invalid, from2Range, null, diff2.Equal);
-
-                        baseIndex2 += diff2.Length1;
-                        index2 += diff2.Length2;
-                        diffIndex2++;
-                    }
+                    AddChangeType(changes, Diff3ChangeType.Conflict, baseRange, from1Range, from2Range, change1 ? (bool?)diff1Equal : null, change2 ? (bool?)diff2Equal : null);
                 }
             }
 
@@ -240,6 +262,22 @@ namespace SharpDiff
                     if (toChanges != null)
                         AddChangeType(toChanges, diff3);
                 }
+                else if (diff3.Base.IsValid && diff3.From1.IsValid && !diff3.From2.IsValid)
+                {
+                    if (IsRangeEqual(baseList, diff3.Base, modified1List, diff3.From1))
+                        diff3.ChangeType = Diff3ChangeType.MergeFrom2;
+
+                    if (toChanges != null)
+                        AddChangeType(toChanges, diff3);
+                }
+                else if (diff3.Base.IsValid && diff3.From2.IsValid && !diff3.From1.IsValid)
+                {
+                    if (IsRangeEqual(baseList, diff3.Base, modified2List, diff3.From2))
+                        diff3.ChangeType = Diff3ChangeType.MergeFrom1;
+
+                    if (toChanges != null)
+                        AddChangeType(toChanges, diff3);
+                }
                 else if (diff3.From1.IsValid && diff3.From2.IsValid)
                 {
                     // If there is no base, we will try to merge 1 and 2 together directly
@@ -349,6 +387,24 @@ namespace SharpDiff
                 }
             }
             return toChanges ?? changes;
+        }
+
+        private bool IsRangeEqual(IList<T> list1, Span range1, IList<T> list2, Span range2)
+        {
+            var length1 = range1.Length;
+            if (length1 != range2.Length)
+                return false;
+
+            bool isEqual = true;
+            for (int i = 0; i < length1; i++)
+            {
+                if (!comparer.Equals(list1[range1.From + i], list2[range2.From + i]))
+                {
+                    isEqual = false;
+                    break;
+                }
+            }
+            return isEqual;
         }
 
         private IEnumerable<Diff2Change> ConvertDiffChangeWithNoRange(IEnumerable<Diff2Change> changes)

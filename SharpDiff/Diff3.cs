@@ -345,11 +345,22 @@ namespace SharpDiff
                     }
                     else
                     {
-                        // Else we have a base != v1 and base != v2
-                        // Check that if v1 = v2 and range is same for (base,v1,v2) then 
-                        // this can be considered as a MergeFrom1And2
-                        if (diff3.Base.Length == diff3.From1.Length && diff3.Base.Length == diff3.From2.Length)
+                        // if base = v1 then MergeFrom2
+                        if (diff3.IsBaseEqualFrom1.HasValue && diff3.IsBaseEqualFrom1.Value)
                         {
+                            diff3.ChangeType = Diff3ChangeType.MergeFrom2;
+                        }
+                        // if base = v2  then MergeFrom1
+                        else if (diff3.IsBaseEqualFrom2.HasValue && diff3.IsBaseEqualFrom2.Value)
+                        {
+                            diff3.ChangeType = Diff3ChangeType.MergeFrom1;
+                        }
+                        else if (diff3.Base.Length == diff3.From1.Length && diff3.Base.Length == diff3.From2.Length)
+                        {
+                            // Else if have a base != v1 and base != v2
+                            // Check that if v1 = v2 and range is same for (base,v1,v2) then 
+                            // this can be considered as a MergeFrom1And2
+
                             if (diff3.IsBaseEqualFrom1.HasValue && diff3.IsBaseEqualFrom1.Value && (!diff3.IsBaseEqualFrom2.HasValue || !diff3.IsBaseEqualFrom2.Value))
                             {
                                 diff3.ChangeType = Diff3ChangeType.MergeFrom2;
@@ -377,7 +388,7 @@ namespace SharpDiff
                         }
 
                         if (toChanges != null)
-                            AddChangeType(toChanges, diff3);
+                        AddChangeType(toChanges, diff3);
                     }
                 }
                 else

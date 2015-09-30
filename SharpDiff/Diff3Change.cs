@@ -5,7 +5,7 @@ namespace SharpDiff
     /// <summary>
     /// A diff3 change.
     /// </summary>
-    public class Diff3Change
+    public sealed class Diff3Change
     {
         internal bool? IsBaseEqualFrom1;
         internal bool? IsBaseEqualFrom2;

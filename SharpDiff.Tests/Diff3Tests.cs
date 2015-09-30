@@ -525,6 +525,40 @@ namespace SharpDiff.Tests
         }
 
         [Test]
+        public void MergeFullReplaceFrom2()
+        {
+            //                                   0    1    2    3    4    5 
+            var baseList = new List<string>() { "A", "B", "C" };
+            var mod1List = new List<string>() { "A", "B", "C" };
+            var mod2List = new List<string>() { "D" };
+
+            var diff3 = Diff3.Compare(baseList, mod1List, mod2List, EqualityComparer<string>.Default).ToList();
+
+            Assert.AreEqual(1, diff3.Count);
+            Assert.AreEqual(Diff3ChangeType.MergeFrom2, diff3[0].ChangeType);
+            Assert.AreEqual(new Span(0, 2), diff3[0].Base);
+            Assert.AreEqual(new Span(0, 2), diff3[0].From1);
+            Assert.AreEqual(new Span(0, 0), diff3[0].From2);
+        }
+
+        [Test]
+        public void MergeFullReplaceFrom1()
+        {
+            //                                   0    1    2    3    4    5 
+            var baseList = new List<string>() { "A", "B", "C" };
+            var mod1List = new List<string>() { "D" };
+            var mod2List = new List<string>() { "A", "B", "C" };
+
+            var diff3 = Diff3.Compare(baseList, mod1List, mod2List, EqualityComparer<string>.Default).ToList();
+
+            Assert.AreEqual(1, diff3.Count);
+            Assert.AreEqual(Diff3ChangeType.MergeFrom1, diff3[0].ChangeType);
+            Assert.AreEqual(new Span(0, 2), diff3[0].Base);
+            Assert.AreEqual(new Span(0, 0), diff3[0].From1);
+            Assert.AreEqual(new Span(0, 2), diff3[0].From2);
+        }
+        
+        [Test]
         public void MergeRemoveFrom2Middle()
         {
             //                                   0    1    2    3    4    5 

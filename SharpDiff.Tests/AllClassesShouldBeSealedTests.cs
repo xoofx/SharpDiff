@@ -21,7 +21,7 @@ namespace SharpDiff.Tests
         [TestCaseSource("AllTypesInDiffLib")]
         public void TypeShouldBeSealed(Type type)
         {
-            Assert.That(type.IsSealed, Is.True);
+            Assert.That(type.IsSealed, Is.True, $"Type {type.FullName} is not sealed");
         }
     }
 }
